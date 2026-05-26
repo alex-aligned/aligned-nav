@@ -249,11 +249,6 @@
     font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
     font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
     color: var(--ink);
-    display: inline-flex; align-items: center; gap: 10px;
-  }
-  .drawer-label::before {
-    content: ''; width: 6px; height: 6px; border-radius: 50%;
-    background: var(--accent);
   }
   .drawer-close {
     display: inline-flex; align-items: center; gap: 10px;
@@ -328,7 +323,7 @@
     content: '';
     position: absolute; left: -16px; top: 50%;
     width: 6px; height: 6px;
-    background: var(--accent); border-radius: 50%;
+    background: var(--ink); border-radius: 50%;
     transform: translateY(-50%);
   }
   .nav-group a.big.is-active .arrow { opacity: 1; }
@@ -410,6 +405,103 @@
     background: var(--ink); color: var(--cream); border-color: var(--ink);
   }
 
+  /* ===================== FINAL CTA + FOOTER ===================== */
+  .final-cta {
+    background: var(--cream);
+    border-top: 1px solid var(--line);
+    padding: 120px 32px 140px;
+    text-align: center;
+  }
+  .final-cta h2 {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-weight: 200; font-size: clamp(48px, 7vw, 96px);
+    line-height: 1.05; letter-spacing: -0.02em;
+    margin-bottom: 32px;
+  }
+  .final-cta .btn { font-size: 14px; padding: 14px 22px; }
+
+  .footer {
+    background: var(--ink);
+    color: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+  .footer-inner {
+    max-width: 1440px; margin: 0 auto;
+    padding: 56px 32px 0;
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1.2fr;
+    gap: 48px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(241, 240, 237, 0.12);
+  }
+  .footer-brand .logo {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-size: 40px; font-weight: 200; letter-spacing: -0.5px;
+    color: var(--cream);
+    display: inline-block; margin-bottom: 18px;
+  }
+  .footer-brand p {
+    font-size: 14px; line-height: 1.55;
+    color: rgba(241, 240, 237, 0.65);
+    max-width: 280px;
+  }
+  .footer-col h4 {
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px; font-weight: 400;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(241, 240, 237, 0.5);
+    margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a {
+    font-size: 15px; color: var(--cream);
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: color 180ms ease, transform 200ms ease;
+  }
+  .footer-col a:hover { color: var(--accent); transform: translateX(2px); }
+  .footer-col a .ext-mini { font-size: 13px; opacity: 0.6; }
+
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; flex-wrap: wrap;
+    padding: 20px 0 24px;
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(241, 240, 237, 0.55);
+    position: relative; z-index: 2;
+  }
+  .footer-bottom a { color: rgba(241, 240, 237, 0.7); transition: color 180ms ease; }
+  .footer-bottom a:hover { color: var(--cream); }
+  .footer-legal { display: flex; gap: 18px; align-items: center; }
+  .footer-legal .sep { opacity: 0.4; }
+
+  .outline-wordmark {
+    position: relative;
+    margin-top: 8px;
+    padding: 0 32px;
+    text-align: center;
+    /* Clip so only the upper half of the wordmark shows */
+    height: clamp(56px, 9.5vw, 140px);
+    overflow: hidden;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .outline-wordmark span {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-weight: 200;
+    font-size: clamp(140px, 24vw, 340px);
+    letter-spacing: -0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(241, 240, 237, 0.32);
+    text-stroke: 1px rgba(241, 240, 237, 0.32);
+    display: inline-block;
+    line-height: 1;
+  }
+
   /* ===================== MOBILE ===================== */
   @media (max-width: 900px) {
     .drawer { width: 100vw; }
@@ -418,8 +510,19 @@
     .hero h1 { font-size: 44px; }
     .hero-meta, .hero-since { font-size: 10px; }
     .anno-grid { grid-template-columns: 1fr; }
-    .topbar-inner { padding: 14px 20px; }
+    .topbar-inner { padding: 18px 20px; }
+    .topbar.is-scrolled .topbar-inner { padding: 12px 20px; }
     .hero-inner { padding: 60px 20px 40px; }
+    .footer-inner { padding: 44px 20px 0; }
+    .footer-top {
+      grid-template-columns: 1fr 1fr;
+      gap: 32px 24px;
+      padding-bottom: 32px;
+    }
+    .footer-brand { grid-column: 1 / -1; }
+    .footer-bottom { font-size: 10px; padding: 16px 0 20px; }
+    .outline-wordmark { height: clamp(40px, 12vw, 80px); }
+    .final-cta { padding: 80px 20px 100px; }
   }
 </style>
 </head>
@@ -506,20 +609,6 @@
           </a>
           <div class="sub">The people behind Aligned</div>
         </li>
-        <li>
-          <a href="#" class="big" data-page="careers">
-            <span class="label-text">Careers</span>
-            <span class="arrow" aria-hidden="true">↗</span>
-          </a>
-          <div class="sub">Join our network of senior practitioners</div>
-        </li>
-        <li>
-          <a href="#" class="big" data-page="ambassador">
-            <span class="label-text">Ambassador Program</span>
-            <span class="arrow" aria-hidden="true">→</span>
-          </a>
-          <div class="sub">Refer founders, share in our success</div>
-        </li>
       </ul>
     </div>
 
@@ -532,13 +621,6 @@
             <span class="arrow" aria-hidden="true">→</span>
           </a>
           <div class="sub">Tell us about your project</div>
-        </li>
-        <li>
-          <a href="#" class="big" data-page="book">
-            <span class="label-text">Book a Call</span>
-            <span class="arrow" aria-hidden="true">↗</span>
-          </a>
-          <div class="sub">30 minutes with our leadership</div>
         </li>
       </ul>
     </div>
@@ -574,7 +656,6 @@
     <button data-set-active="ai">AI Innovation</button>
     <button data-set-active="work" class="active-page">Case Studies</button>
     <button data-set-active="about">About</button>
-    <button data-set-active="careers">Careers</button>
     <button data-set-active="contact">Contact</button>
   </div>
 
@@ -609,8 +690,72 @@
       <h3>External-link affordance</h3>
       <p>Careers (Ashby) and Book a Call use ↗ instead of → so users know they'll leave the site or open a scheduler.</p>
     </div>
+    <div class="anno">
+      <span class="tag">Change 7</span>
+      <h3>Footer carries the full site map</h3>
+      <p>The drawer stays tight (Services, AI Innovation, Case Studies, About, Contact, Book a Call). The footer holds the complete map — including Careers and Ambassador Program — plus contact and social. Scroll to the bottom to preview.</p>
+    </div>
   </div>
 </section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final-cta">
+  <h2>Ready to reach alignment?</h2>
+  <a href="#" class="btn">Connect with us <span class="dot"></span></a>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="logo">Aligned</a>
+        <p>Strategic technology partner for mission-driven companies. Headquartered in Palo Alto, California.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Work</h4>
+        <ul>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">AI Innovation</a></li>
+          <li><a href="#">Case Studies</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Careers <span class="ext-mini">↗</span></a></li>
+          <li><a href="#">Ambassador Program</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Contact</a></li>
+          <li><a href="mailto:hello@aligned.team">hello@aligned.team</a></li>
+          <li><a href="#">GitHub <span class="ext-mini">↗</span></a></li>
+          <li><a href="#">LinkedIn <span class="ext-mini">↗</span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Aligned. All rights reserved.</span>
+      <div class="footer-legal">
+        <a href="#">Terms of Service</a>
+        <span class="sep">·</span>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="outline-wordmark" aria-hidden="true">
+    <span>Aligned</span>
+  </div>
+</footer>
 
 <script>
   const drawer = document.getElementById('drawer');
