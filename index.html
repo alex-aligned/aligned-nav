@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aligned — Navigation Prototype</title>
+<link rel="preconnect" href="https://aligned.team" crossorigin>
+<style>
+  /* Pull in the real fonts from aligned.team's CDN */
+  @font-face {
+    font-family: "ABC Arizona Flare";
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+    src: local("ABC Arizona Flare Thin"), local("ABCArizonaFlare-Thin"),
+         url("https://aligned.team/fonts/ABCArizonaFlare-Thin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Averta PE";
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: local("Averta PE Regular"), local("AvertaPE-Regular"),
+         url("https://aligned.team/fonts/AvertaPE-Regular.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Averta PE";
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: local("Averta PE Medium"), local("AvertaPE-Medium"),
+         url("https://aligned.team/fonts/AvertaPE-Medium.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Ellograph CF";
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: local("Ellograph CF Regular"), local("EllographCF-Regular"),
+         url("https://aligned.team/fonts/EllographCF-Regular.otf") format("opentype");
+  }
+</style>
+<style>
+  :root {
+    --cream: #F1F0ED;
+    --cream-2: #EAE7DE;
+    --ink: #1B1A17;
+    --ink-2: #2A2823;
+    --muted: #6B675F;
+    --line: rgba(27, 26, 23, 0.12);
+    --line-strong: rgba(27, 26, 23, 0.35);
+    --accent: #C5FF4F;
+    --pink: #F5D2C4;
+    --sky-1: #1c2a4a;
+    --sky-2: #3a4e6a;
+    --sky-3: #c9a583;
+    --sky-4: #f0d4a8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: 'Averta PE', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100vh; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ===================== TOP BAR ===================== */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background 300ms ease, border-color 300ms ease,
+                backdrop-filter 300ms ease, padding 240ms ease;
+  }
+  .topbar.is-scrolled {
+    background: rgba(241, 240, 237, 0.88);
+    backdrop-filter: saturate(1.4) blur(12px);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    border-bottom-color: var(--line);
+  }
+  .topbar-inner {
+    max-width: 1440px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 32px;
+    gap: 24px;
+    transition: padding 240ms ease;
+  }
+  .topbar.is-scrolled .topbar-inner { padding: 14px 32px; }
+
+  .logo {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-size: 28px; font-weight: 200; letter-spacing: -0.5px;
+    color: var(--cream);
+    transition: color 300ms ease;
+  }
+  .topbar.is-scrolled .logo { color: var(--ink); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+
+  /* Site button style: 8px corners, Ellograph CF, uppercase, 1.4px tracking */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 14px; font-weight: 400;
+    letter-spacing: 1.4px; text-transform: uppercase;
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: var(--ink); color: var(--cream);
+    border: 1px solid var(--ink);
+    transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+  }
+  .btn:hover { transform: translateY(-1px); background: var(--ink-2); }
+  .btn .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* Secondary button: same shape, outlined */
+  .btn--ghost {
+    background: transparent; color: var(--ink); border: 1px solid var(--line-strong);
+  }
+  .btn--ghost:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+  .menu-toggle {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 14px; font-weight: 400;
+    letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--cream);
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid rgba(241, 240, 237, 0.5);
+    transition: background 300ms ease, color 300ms ease, border-color 300ms ease;
+  }
+  .menu-toggle:hover { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+  .topbar.is-scrolled .menu-toggle {
+    color: var(--ink);
+    border-color: var(--line-strong);
+  }
+  .topbar.is-scrolled .menu-toggle:hover {
+    background: var(--ink); color: var(--cream); border-color: var(--ink);
+  }
+  .menu-icon {
+    display: inline-flex; flex-direction: column; gap: 3px;
+  }
+  .menu-icon span {
+    display: block; width: 16px; height: 1.5px; background: currentColor; border-radius: 1px;
+  }
+  .menu-icon span:nth-child(2) { width: 11px; }
+
+  /* mobile button kept for media-query compat — same style as desktop now */
+  .mobile-menu-btn { display: none; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    position: relative;
+    height: 100vh;
+    min-height: 620px;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 100%, var(--sky-4) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 50% 90%, var(--sky-3) 0%, transparent 60%),
+      linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 60%, var(--sky-3) 100%);
+    color: var(--cream);
+  }
+  .stars {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 15%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1px 1px at 60% 22%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1.5px 1.5px at 80% 10%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 35% 30%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 75% 38%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1.5px 1.5px at 12% 45%, rgba(255,255,255,0.55), transparent),
+      radial-gradient(1px 1px at 50% 18%, rgba(255,255,255,0.5), transparent);
+    pointer-events: none;
+  }
+  .arc {
+    position: absolute;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .arc-1 { width: 1200px; height: 1200px; left: 50%; top: 60%; transform: translate(-50%, 0); }
+  .arc-2 { width: 1600px; height: 1600px; left: 50%; top: 70%; transform: translate(-50%, 0); opacity: 0.5; }
+
+  .hero-inner {
+    position: relative; z-index: 2;
+    max-width: 1440px; margin: 0 auto;
+    padding: 96px 32px 64px;
+    display: flex; flex-direction: column;
+    height: 100%; justify-content: center;
+  }
+  .hero h1 {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-weight: 200; font-size: clamp(48px, 7vw, 96px);
+    line-height: 1.02; letter-spacing: -0.02em;
+    margin-bottom: 28px;
+    max-width: 1100px;
+  }
+  .hero-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 32px; flex-wrap: wrap;
+  }
+  .hero p {
+    font-size: 15px; line-height: 1.55; max-width: 380px;
+    color: rgba(241, 240, 237, 0.85);
+  }
+  .hero-meta {
+    position: absolute; left: 32px; bottom: 32px;
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(245, 210, 196, 0.85);
+    line-height: 1.8;
+  }
+  .hero-since {
+    position: absolute; right: 32px; bottom: 32px;
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* ===================== DRAWER MENU ===================== */
+  .scrim {
+    position: fixed; inset: 0; z-index: 99;
+    background: rgba(27, 26, 23, 0.35);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 320ms ease;
+  }
+  .scrim.is-open { opacity: 1; pointer-events: auto; }
+
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: min(480px, 92vw);
+    z-index: 100;
+    background: var(--cream);
+    transform: translateX(100%);
+    transition: transform 420ms cubic-bezier(0.7, 0, 0.2, 1);
+    display: flex; flex-direction: column;
+    box-shadow: -20px 0 60px rgba(27, 26, 23, 0.12);
+  }
+  .drawer.is-open { transform: translateX(0); }
+
+  .drawer-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .drawer-label {
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .drawer-label::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .drawer-close {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 13px; font-weight: 400;
+    letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--ink);
+    padding: 10px 14px;
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+  .drawer-close:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .close-icon { width: 14px; height: 14px; position: relative; }
+  .close-icon::before, .close-icon::after {
+    content: ''; position: absolute; top: 50%; left: 0;
+    width: 100%; height: 1.5px; background: currentColor; border-radius: 1px;
+  }
+  .close-icon::before { transform: rotate(45deg); }
+  .close-icon::after { transform: rotate(-45deg); }
+
+  .drawer-content {
+    padding: 32px 28px 24px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 36px;
+  }
+  .nav-group { display: flex; flex-direction: column; }
+  .nav-group .label {
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .nav-group ul { list-style: none; display: flex; flex-direction: column; }
+  .nav-group ul li {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-group ul li:last-child { border-bottom: none; }
+
+  .nav-group a.big {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-size: 32px; font-weight: 200; line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    transition: color 180ms ease;
+    position: relative;
+    width: 100%;
+  }
+  .nav-group a.big .label-text {
+    transition: transform 240ms cubic-bezier(0.7, 0, 0.2, 1);
+    display: inline-block;
+  }
+  .nav-group a.big .arrow {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-weight: 200;
+    font-size: 28px;
+    color: var(--ink);
+    opacity: 0.55;
+    line-height: 1;
+    transition: transform 240ms cubic-bezier(0.7, 0, 0.2, 1), opacity 200ms ease;
+    flex-shrink: 0;
+  }
+  .nav-group a.big:hover .label-text { transform: translateX(4px); }
+  .nav-group a.big:hover .arrow { transform: translateX(6px); opacity: 1; }
+  .nav-group a.big.is-active { color: var(--ink); }
+  .nav-group a.big.is-active::before {
+    content: '';
+    position: absolute; left: -16px; top: 50%;
+    width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
+    transform: translateY(-50%);
+  }
+  .nav-group a.big.is-active .arrow { opacity: 1; }
+  .nav-group .sub {
+    font-size: 12.5px; color: var(--muted); margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .drawer-footer {
+    border-top: 1px solid var(--line);
+    padding: 20px 28px 24px;
+    flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .drawer-footer .btn { width: 100%; justify-content: center; }
+  .drawer-contact { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .drawer-contact a {
+    font-size: 12.5px; color: var(--ink-2);
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: color 180ms ease;
+  }
+  .drawer-contact a:hover { color: var(--ink); }
+  .drawer-contact .icon { width: 13px; height: 13px; opacity: 0.7; }
+
+  /* ===================== ANNOTATIONS ===================== */
+  .annotations {
+    max-width: 1100px; margin: 80px auto;
+    padding: 0 32px;
+  }
+  .annotations h2 {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-size: 40px; font-weight: 200; margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .annotations .lead {
+    color: var(--muted); margin-bottom: 40px; font-size: 15px; line-height: 1.6;
+  }
+  .anno-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .anno {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px;
+  }
+  .anno .tag {
+    display: inline-block;
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--ink); background: var(--accent);
+    padding: 4px 8px; border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  .anno h3 {
+    font-family: 'ABC Arizona Flare', ui-serif, Georgia, serif;
+    font-size: 24px; font-weight: 200; margin-bottom: 6px;
+  }
+  .anno p {
+    font-size: 14px; line-height: 1.55; color: var(--ink-2);
+  }
+
+  .demo-controls {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .demo-controls button {
+    font-family: 'Ellograph CF', ui-monospace, SFMono-Regular, monospace;
+    font-size: 12px; font-weight: 400; letter-spacing: 1.4px; text-transform: uppercase;
+    padding: 10px 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .demo-controls button:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .demo-controls .active-page {
+    background: var(--ink); color: var(--cream); border-color: var(--ink);
+  }
+
+  /* ===================== MOBILE ===================== */
+  @media (max-width: 900px) {
+    .drawer { width: 100vw; }
+    .drawer-content { padding: 24px 20px; gap: 28px; }
+    .nav-group a.big { font-size: 26px; }
+    .hero h1 { font-size: 44px; }
+    .hero-meta, .hero-since { font-size: 10px; }
+    .anno-grid { grid-template-columns: 1fr; }
+    .topbar-inner { padding: 14px 20px; }
+    .hero-inner { padding: 60px 20px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#" class="logo">Aligned</a>
+
+    <div class="nav-right">
+      <button class="menu-toggle" id="openMenu" aria-label="Open menu">
+        <span class="menu-icon"><span></span><span></span></span>
+        Menu
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="stars"></div>
+  <div class="arc arc-1"></div>
+  <div class="arc arc-2"></div>
+  <div class="hero-meta">
+    Strategic<br/>Technology Partners
+  </div>
+  <div class="hero-since">Since 2021</div>
+  <div class="hero-inner">
+    <h1>The right people.<br/>Aligned to what matters.</h1>
+    <div class="hero-row">
+      <p>We build and ship complex technology for companies solving hard problems with embedded teams, senior leadership, and a network that moves with you.</p>
+      <a href="#" class="btn">Connect with us <span class="dot"></span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DRAWER MENU ============ -->
+<div class="scrim" id="scrim" aria-hidden="true"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-label="Site menu" aria-hidden="true">
+  <div class="drawer-bar">
+    <span class="drawer-label">Menu</span>
+    <button class="drawer-close" id="closeMenu" aria-label="Close menu">
+      <span class="close-icon"></span>
+      Close
+    </button>
+  </div>
+
+  <nav class="drawer-content" aria-label="Site sections">
+    <div class="nav-group">
+      <div class="label">Work</div>
+      <ul>
+        <li>
+          <a href="#" class="big" data-page="services">
+            <span class="label-text">Services</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <div class="sub">Embedded teams, fractional leadership, coaching</div>
+        </li>
+        <li>
+          <a href="#" class="big" data-page="ai">
+            <span class="label-text">AI Innovation</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <div class="sub">AI-accelerated product, design, and engineering</div>
+        </li>
+        <li>
+          <a href="#" class="big is-active" data-page="work">
+            <span class="label-text">Case Studies</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <div class="sub">Ready, Parsec, Imgix, and more</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="label">Company</div>
+      <ul>
+        <li>
+          <a href="#" class="big" data-page="about">
+            <span class="label-text">About</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <div class="sub">The people behind Aligned</div>
+        </li>
+        <li>
+          <a href="#" class="big" data-page="careers">
+            <span class="label-text">Careers</span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="sub">Join our network of senior practitioners</div>
+        </li>
+        <li>
+          <a href="#" class="big" data-page="ambassador">
+            <span class="label-text">Ambassador Program</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <div class="sub">Refer founders, share in our success</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="label">Connect</div>
+      <ul>
+        <li>
+          <a href="#" class="big" data-page="contact">
+            <span class="label-text">Contact</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <div class="sub">Tell us about your project</div>
+        </li>
+        <li>
+          <a href="#" class="big" data-page="book">
+            <span class="label-text">Book a Call</span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="sub">30 minutes with our leadership</div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="drawer-footer">
+    <a href="#" class="btn">Connect with us <span class="dot"></span></a>
+    <div class="drawer-contact">
+      <a href="mailto:hello@aligned.team">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        hello@aligned.team
+      </a>
+      <a href="#">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.63 22.42c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.74.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.3 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.84 1.18 3.1 0 4.43-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.55A11.5 11.5 0 0 0 12 .5Z"/></svg>
+        GitHub
+      </a>
+      <a href="#">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2ZM8.5 18H6V10h2.5v8ZM7.25 8.7a1.45 1.45 0 1 1 0-2.9 1.45 1.45 0 0 1 0 2.9ZM18 18h-2.5v-4.2c0-1-.02-2.28-1.39-2.28-1.4 0-1.61 1.09-1.61 2.21V18H10V10h2.4v1.1h.04c.34-.64 1.17-1.32 2.41-1.32 2.58 0 3.05 1.7 3.05 3.9V18Z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</aside>
+
+<!-- ============ ANNOTATIONS (prototype notes) ============ -->
+<section class="annotations">
+  <h2>Prototype notes</h2>
+  <p class="lead">A working sketch of the proposed nav using a right-side drawer — matching the pattern already used elsewhere on the site. Toggle the menu and the active-page simulator to see how state, grouping, and the drawer behave. Resize below ~900px to preview the mobile pattern (drawer expands to full width).</p>
+
+  <div class="demo-controls">
+    <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);align-self:center;margin-right:8px;">Simulate active page:</span>
+    <button data-set-active="services">Services</button>
+    <button data-set-active="ai">AI Innovation</button>
+    <button data-set-active="work" class="active-page">Case Studies</button>
+    <button data-set-active="about">About</button>
+    <button data-set-active="careers">Careers</button>
+    <button data-set-active="contact">Contact</button>
+  </div>
+
+  <div class="anno-grid">
+    <div class="anno">
+      <span class="tag">Change 1</span>
+      <h3>Transparent header that condenses on scroll</h3>
+      <p>Over the hero, the top bar is invisible — light wordmark and outlined Menu button float against the sky. Past the hero, it fills with a cream backdrop, inverts to dark text, and shrinks slightly. Keeps the hero unbroken while staying useful on inner pages.</p>
+    </div>
+    <div class="anno">
+      <span class="tag">Change 2</span>
+      <h3>Visible active state in drawer</h3>
+      <p>Current page is marked with an accent dot beside the link, so users opening the drawer on an inner page immediately see where they are.</p>
+    </div>
+    <div class="anno">
+      <span class="tag">Change 3</span>
+      <h3>Right-side drawer with grouped sections</h3>
+      <p>Reuses the drawer pattern from the rest of the site. Sections stack vertically — Work · Company · Connect — making eight flat items easier to scan in a focused panel.</p>
+    </div>
+    <div class="anno">
+      <span class="tag">Change 4</span>
+      <h3>Differentiated CTAs</h3>
+      <p>"Contact" the link and "Book a Call" the action are now distinct intents — fewer redundant paths, clearer conversion.</p>
+    </div>
+    <div class="anno">
+      <span class="tag">Change 5</span>
+      <h3>Readable menu icon + label</h3>
+      <p>Replaces the dot-pattern icon with a clear "Menu" word + two-line glyph. Discoverability matters when the menu is the only way in.</p>
+    </div>
+    <div class="anno">
+      <span class="tag">Change 6</span>
+      <h3>External-link affordance</h3>
+      <p>Careers (Ashby) and Book a Call use ↗ instead of → so users know they'll leave the site or open a scheduler.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const drawer = document.getElementById('drawer');
+  const scrim = document.getElementById('scrim');
+  const openBtn = document.getElementById('openMenu');
+  const closeBtn = document.getElementById('closeMenu');
+  const topbar = document.querySelector('.topbar');
+
+  // Toggle opaque state once user scrolls past the hero
+  const heroEl = document.querySelector('.hero');
+  function updateTopbar() {
+    const threshold = heroEl ? heroEl.offsetHeight - 120 : 80;
+    if (window.scrollY > threshold) {
+      topbar.classList.add('is-scrolled');
+    } else {
+      topbar.classList.remove('is-scrolled');
+    }
+  }
+  window.addEventListener('scroll', updateTopbar, { passive: true });
+  window.addEventListener('resize', updateTopbar);
+  updateTopbar();
+
+  function openDrawer() {
+    drawer.classList.add('is-open');
+    scrim.classList.add('is-open');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    drawer.classList.remove('is-open');
+    scrim.classList.remove('is-open');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  openBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  scrim.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  // Active page simulator — updates active state inside the drawer
+  const setActiveButtons = document.querySelectorAll('[data-set-active]');
+  setActiveButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.setActive;
+      document.querySelectorAll('.nav-group a.big').forEach(a => a.classList.remove('is-active'));
+      setActiveButtons.forEach(b => b.classList.remove('active-page'));
+      const drawerMatch = document.querySelector(`.nav-group a.big[data-page="${target}"]`);
+      if (drawerMatch) drawerMatch.classList.add('is-active');
+      btn.classList.add('active-page');
+      openDrawer();
+    });
+  });
+</script>
+</body>
+</html>
